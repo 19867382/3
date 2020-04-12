@@ -1,0 +1,101 @@
+import java.util.*;
+
+class WordFilter {
+
+    TrieNode trie;
+    
+    public WordFilter(String[] words) {
+    
+        trie = new TrieNode();
+        
+        for (int weight = 0; weight < words.length; ++weight) {
+        
+            String word = words[weight] + "{";
+            
+            for (int i = 0; i < word.length(); ++i) {
+            
+                TrieNode cur = trie;
+                
+                cur.weight = weight;
+                
+                for (int j = i; j < 2 * word.length() - 1; ++j) {
+                
+                    int k = word.charAt(j % word.length()) - 'a';
+                    
+                    if (cur.children[k] == null)
+                        cur.children[k] = new TrieNode();
+                        
+                    cur = cur.children[k];
+                    
+                    cur.weight = weight;
+                }
+            }
+        }
+    }
+    
+    public int find(String prefix, String suffix) {
+    
+        TrieNode cur = trie;
+        
+        for (char letter: (suffix + '{' + prefix).toCharArray()) {
+        
+            if (cur.children[letter - 'a'] == null) return -1;
+            
+            cur = cur.children[letter - 'a'];
+        }
+        
+        return cur.weight;
+    }
+}
+
+class TrieNode {
+
+    TrieNode[] children;
+    
+    int weight;
+    
+    public TrieNode() {
+    
+        children = new TrieNode[27];
+        
+        weight = 0;
+    }
+    
+}
+
+// 给定多个 words，words[i] 的权重为 i 
+// 设计一个类 WordFilter 实现函数WordFilter.f(String prefix, String suffix)
+// 这个函数将返回具有前缀 prefix 和后缀suffix 的词的最大权重。如果没有这样的词，返回 -1
+
+public class Task2 {
+
+	public static final String[] words = {
+		"apple", "people"
+	};
+	
+	public static void main(String[] args) {
+  
+		Scanner scanner = new Scanner(System.in);
+    
+		WordFilter wf = new WordFilter(words);
+		
+		System.out.println("请输入要查找的前缀以及后缀：");
+    
+		while(scanner.hasNext()) {
+    
+			String prefix = scanner.next();
+      
+			String suffix = scanner.next();
+      
+			int val = wf.find(prefix, suffix);
+      
+			if(val == -1)
+				System.out.println("没有符合的字符串");
+			else
+				System.out.println("该字符串的权值为 " + val);
+        
+			System.out.println("请输入要查找的前缀以及后缀：");
+      
+		}
+	}
+}
